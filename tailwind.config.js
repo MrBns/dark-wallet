@@ -5,6 +5,9 @@ export default {
 		extend: {
 			container: {
 				center: true
+			},
+			fontFamily: {
+				oswald: ['Oswald', 'sans-serif']
 			}
 		}
 	},
