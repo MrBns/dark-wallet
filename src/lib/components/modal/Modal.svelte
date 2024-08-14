@@ -11,6 +11,10 @@
 		customFooterSnp?: Snippet;
 		hideOnCancelClick?: boolean;
 		hideOnOkClick?: boolean;
+		okBtnText?: string;
+		cancelBtnText?: string;
+		debug?: boolean;
+		showByDefault?: boolean;
 	};
 </script>
 
@@ -29,6 +33,8 @@
 		defaultStyle = true,
 		hideOnOkClick = true,
 		hideOnCancelClick = true,
+		okBtnText = 'Ok',
+		cancelBtnText = 'Cancel',
 		title,
 		...props
 	}: ModalConfig & {
@@ -38,14 +44,16 @@
 		children: Snippet;
 	} = $props();
 
-	let isShow = $state<Boolean>(false);
-	let modalEl = $state<HTMLDivElement>();
+	let isShow = $state<Boolean>(Boolean(props.debug || props.showByDefault));
 
-	const customEvent = new CustomEvent('action', {
-		detail: {
-			ok: false,
-			cancel: false
-		}
+	let elements = $state<{
+		modal: HTMLDivElement | undefined;
+		cancelButton: HTMLButtonElement | undefined;
+		okButton: HTMLButtonElement | undefined;
+	}>({
+		modal: undefined,
+		cancelButton: undefined,
+		okButton: undefined
 	});
 
 	export function show() {
@@ -54,6 +62,9 @@
 
 	export async function hide() {
 		isShow = false;
+	}
+	export function getElements() {
+		return elements;
 	}
 
 	function handleOkClick() {
@@ -69,7 +80,7 @@
 {#if isShow}
 	<div class="fixed w-full h-full bg-black/30 z-50 backdrop-blur left-0 bottom-0"></div>
 	<div
-		bind:this={modalEl}
+		bind:this={elements.modal}
 		class="fixed bg-white bottom-1/2 left-1/2 -translate-x-1/2 translate-y-1/2 z-50 {className}
         {defaultStyle ? 'min-w-[400px] rounded-xl' : ''}"
 		{id}
@@ -88,16 +99,18 @@
 				<div class="flex footer">
 					{#if showCancelButton}
 						<button
+							bind:this={elements.cancelButton}
 							onclick={handleCancelClick}
 							class="flex-1 border-2 active:border-red-500 active:bg-red-100 border-red-100 hover:border-red-300 bg-red-100 text-red-900 hover:bg-red-200 px-6 py-2 rounded-bl-md"
-							>Cancel</button
+							>{cancelBtnText}</button
 						>
 					{/if}
 					{#if showOkButton}
 						<button
+							bind:this={elements.okButton}
 							onclick={handleOkClick}
 							class="flex-1 border-2 border-green-100 active:border-green-600 active:bg-green-100 hover:border-green-400 bg-green-100 text-green-900 hover:bg-green-200 px-6 py-2 rounded-br-md"
-							>Ok</button
+							>{okBtnText}</button
 						>
 					{/if}
 				</div>

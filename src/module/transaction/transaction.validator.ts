@@ -35,6 +35,7 @@ export const createTrxValidator = z
 		(v) => {
 			const account = getAccountByKey('documentId', v.account);
 			if (!account) return false;
+			if (v.type === 'deposit') return true;
 			if (v.amount.official > account.amount.official) {
 				return false;
 			}
@@ -49,6 +50,7 @@ export const createTrxValidator = z
 		(v) => {
 			const account = getAccountByKey('documentId', v.account);
 			if (!account) return false;
+			if (v.type === 'deposit') return true;
 			if (v.amount.unOfficial > account.amount.unOfficial) {
 				return false;
 			}

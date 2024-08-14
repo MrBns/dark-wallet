@@ -6,8 +6,21 @@
 		totalUnofficialAmount
 	} from '$module/accounts/account.svelte';
 	import AddAccountModal from '$lib/components/modal/AddAccountModal.svelte';
+	import iconify from '$lib/helpers/iconify';
+	import Confirm from '$lib/helpers/confirm';
+	import { onMount } from 'svelte';
+	import type { AccountI } from '$module/accounts/account.interface';
 
 	let modal = $state<AddAccountModal>();
+	function handleAccountDelete(account: AccountI) {
+		Confirm({
+			html: `
+			<div class="text-xl text-red-500">
+				<p class=""> Are you Sure you want to Delete</p>
+				<p class="font-bold"> ${account.name} </p>	
+			<div/>`
+		}).then((v) => console.log({ v }));
+	}
 </script>
 
 <AddAccountModal bind:this={modal} />
@@ -31,14 +44,30 @@
 					>
 				</p>
 			</div>
-			{#each accounts.value as acc}
-				<div class="bg-indigo-400 text-white mb-2 p-4 rounded-2xl">
-					<p class="text-2xl">Name - {acc.name}</p>
-					<p>UnOfficial Amount - {acc.amount.unOfficial}</p>
-					<p>Official Amount - {acc.amount.official}</p>
-					<p class="">Unofficial Extra - {acc.amount.unOfficial - acc.amount.official}</p>
-				</div>
-			{/each}
+			<div class="grid grid-cols-3 gap-4">
+				{#each accounts.value as acc}
+					<div class="bg-white text-gray-600 border border-gray-300 p-4 rounded-2xl relative group">
+						<p class="text-2xl font-medium">{acc.name}</p>
+						<p>
+							Total (with Unofficial) - <span class="font-oswald text-xl"
+								>{acc.amount.unOfficial}</span
+							>
+						</p>
+						<p>Official - <span class="font-oswald text-xl">{acc.amount.official}</span></p>
+						<p class="">
+							Unofficial - <span class="font-oswald text-xl"
+								>{acc.amount.unOfficial - acc.amount.official}</span
+							>
+						</p>
+						<button
+							onclick={() => handleAccountDelete(acc)}
+							class="text-3xl absolute top-3 right-3 hover:text-red-600 group-hover:visible invisible"
+						>
+							<iconify-icon icon={iconify.trashDuo}></iconify-icon>
+						</button>
+					</div>
+				{/each}
+			</div>
 		</div>
 	</div>
 </main>
