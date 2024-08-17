@@ -1,10 +1,22 @@
 import { db } from '$lib/firebase/firestore/firestore';
-import { doc, getDoc, increment, serverTimestamp, writeBatch } from 'firebase/firestore';
+import {
+	doc,
+	getDoc,
+	getDocs,
+	increment,
+	limit,
+	orderBy,
+	query,
+	QueryConstraint,
+	serverTimestamp,
+	writeBatch
+} from 'firebase/firestore';
 import type { z } from 'zod';
 import type { createTrxValidator } from './transaction.validator';
 import { accountCollection } from '$module/accounts/account.constant';
 import { depositTrxCollection, withdrawTrxCollection } from './transaction.constant';
 import type { IDepositTrx } from './transaction.model';
+import { depositTrxStore, withdrawTrxStore } from './transaction.svelte';
 
 type TCreateTrxData = z.infer<typeof createTrxValidator>;
 
@@ -73,4 +85,34 @@ export async function createWithdrawTrx(param: TCreateTrxData) {
 	} catch (e) {
 		console.error(e);
 	}
+}
+
+/* Get all Deposit Transaction */
+export function loadAllDepositTrx() {
+	const _q = query(depositTrxCollection, orderBy('createdAt', 'desc'), limit(30));
+	getDocs(_q).then((v) => {
+		depositTrxStore.value = v.docs
+			.filter((v) => v.exists())
+			.map((v) => {
+				return {
+					...v.data(),
+					documentId: v.id
+				} as IDepositTrx;
+			});
+	});
+}
+
+/* Get all Withdraw Transaction */
+export function loadAllWithdrawTrx() {
+	const _q = query(withdrawTrxCollection, orderBy('createdAt', 'desc'), limit(30));
+	getDocs(_q).then((v) => {
+		withdrawTrxStore.value = v.docs
+			.filter((v) => v.exists())
+			.map((v) => {
+				return {
+					...v.data(),
+					documentId: v.id
+				} as IDepositTrx;
+			});
+	});
 }

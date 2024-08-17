@@ -50,14 +50,16 @@ export default async function Confirm(params: ConfirmParams) {
 
 			/* Buttons */
 			const cancelBtn = modalWrapper.querySelector(`#${id}-cancel-button`) as HTMLButtonElement;
-			const okBtn = modalWrapper.querySelector(`#${id}-cancel-button`) as HTMLButtonElement;
+			const okBtn = modalWrapper.querySelector(`#${id}-ok-button`) as HTMLButtonElement;
 			const bodyEl = modalWrapper.querySelector(`#${id}-body`) as HTMLDivElement;
+			console.log({ cancelBtn, okBtn, bodyEl });
 
 			cancelBtn.addEventListener('click', function () {
 				setTimeout(remove, 100);
 				return res(true);
 			});
 			okBtn.addEventListener('click', function () {
+				console.log({ okBtn });
 				setTimeout(remove, 100);
 				return res(true);
 			});

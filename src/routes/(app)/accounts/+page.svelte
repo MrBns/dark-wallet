@@ -8,10 +8,13 @@
 	import AddAccountModal from '$lib/components/modal/AddAccountModal.svelte';
 	import iconify from '$lib/helpers/iconify';
 	import Confirm from '$lib/helpers/confirm';
-	import { onMount } from 'svelte';
+
 	import type { AccountI } from '$module/accounts/account.interface';
+	import { deleteSingleAccount } from '$module/accounts/account.services';
+	import { onMount } from 'svelte';
 
 	let modal = $state<AddAccountModal>();
+	let colors = $state<string[]>([]);
 	function handleAccountDelete(account: AccountI) {
 		Confirm({
 			html: `
@@ -19,8 +22,18 @@
 				<p class=""> Are you Sure you want to Delete</p>
 				<p class="font-bold"> ${account.name} </p>	
 			<div/>`
-		}).then((v) => console.log({ v }));
+		}).then((v) => {
+			console.log({ v });
+			if (v) {
+				deleteSingleAccount(account.documentId);
+			}
+		});
 	}
+
+	// onMount(async () => {
+	// 	const _colors = await import('$lib/helpers/getColorShades');
+	// 	colors = _colors.default();
+	// });
 </script>
 
 <AddAccountModal bind:this={modal} />
@@ -33,10 +46,10 @@
 		<div class="">
 			<div class="flex gap-x-5 mb-5">
 				<p class="p-3 bg-green-500 flex-1 text-white text-xl rounded">
-					Total unofficial Amount <span class="text-5xl">{totalOfficialAmount.value}</span>
+					Total unofficial Amount <span class="text-5xl">{totalUnofficialAmount.value}</span>
 				</p>
 				<p class="p-3 bg-red-500 flex-1 text-white text-xl rounded">
-					Total unofficial Amount <span class="text-5xl">{totalUnofficialAmount.value}</span>
+					Total unofficial Amount <span class="text-5xl">{totalOfficialAmount.value}</span>
 				</p>
 				<p class="p-3 bg-orange-500 flex-1 text-white text-xl rounded">
 					Total unofficial Extra Amount <span class="text-5xl"
@@ -46,6 +59,7 @@
 			</div>
 			<div class="grid grid-cols-3 gap-4">
 				{#each accounts.value as acc}
+					{console.log(acc)}
 					<div class="bg-white text-gray-600 border border-gray-300 p-4 rounded-2xl relative group">
 						<p class="text-2xl font-medium">{acc.name}</p>
 						<p>
@@ -71,6 +85,12 @@
 		</div>
 	</div>
 </main>
+
+<!-- <div class="">
+	{#each colors as color}
+		<div class="w-10 h-5" style="background: {color}"></div>
+	{/each}
+</div> -->
 
 <style lang="postcss">
 </style>

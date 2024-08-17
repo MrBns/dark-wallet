@@ -13,20 +13,33 @@ export const AccountSchema = z.object({
 		})
 		.url('logo must be a valid url')
 		.optional(),
-	amount: z.object({
-		official: z
-			.number({
-				invalid_type_error: 'Official Amount Must be Number',
-				required_error: 'Official Amount is required'
-			})
-			.nonnegative('Official Amount cannot be negative'),
-		unOfficial: z
-			.number({
-				invalid_type_error: 'Official Amount Must be Number',
-				required_error: 'Official Amount is required'
-			})
-			.nonnegative('Unofficial Amount cannot be negative')
-	})
+	amount: z
+		.object({
+			official: z
+				.number({
+					invalid_type_error: 'Official Amount Must be Number',
+					required_error: 'Official Amount is required'
+				})
+				.nonnegative('Official Amount cannot be negative'),
+			unOfficial: z
+				.number({
+					invalid_type_error: 'Official Amount Must be Number',
+					required_error: 'Official Amount is required'
+				})
+				.nonnegative('Unofficial Amount cannot be negative')
+		})
+		.refine(
+			(arg) => {
+				if (arg.official > arg.unOfficial) {
+					return false;
+				}
+				return true;
+			},
+			{
+				path: ['official'],
+				message: 'Official cannot be more than Total with Unofficial'
+			}
+		)
 });
 
 export type TAccount = z.infer<typeof AccountSchema> & {

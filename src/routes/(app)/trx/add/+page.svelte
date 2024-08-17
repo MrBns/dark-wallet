@@ -19,6 +19,10 @@
 		description: ''
 	});
 	let error: ZodFormattedError<z.infer<typeof createTrxValidator>>;
+	let formStatus = $state<{
+		type: 'success' | 'failed';
+		status: string;
+	}>();
 
 	let selectedAccountBalance = $state({
 		official: 0,
@@ -33,21 +37,26 @@
 	};
 
 	const handleSubmit: HTMLFormAttributes['onsubmit'] = async function (e) {
+		const updateStatus = (status: string, type: 'success' | 'failed') =>
+			(formStatus = { status, type });
 		try {
 			const result = await createTrxValidator.safeParseAsync(formData);
 
 			if (result.success) {
-				console.log(result.data);
 				if (result.data.type === 'deposit') {
 					await createDepositTrx(result.data);
+					updateStatus('Deposit Created Successfully', 'success');
 				} else {
 					await createWithdrawTrx(result.data);
+					updateStatus('Deposit Created Successfully', 'success');
 				}
 			} else {
-				console.log(result.error.format());
+				error = result.error.format();
 			}
 		} catch (e) {
-			console.error(e);
+			if (e instanceof Error) {
+				updateStatus(`Failed to Create Transaction - ${e.message}`, 'failed');
+			}
 		}
 	};
 </script>
@@ -58,7 +67,7 @@
 			<div class="text-center">
 				<h1 class="text-3xl">Create a Expense record</h1>
 			</div>
-			<form onsubmit={handleSubmit} action="" class="space-y-8">
+			<form onsubmit={handleSubmit} class="space-y-8">
 				<div class="flex gap-x-4">
 					<label for="deposit" class="">
 						<span>Deposit</span>
