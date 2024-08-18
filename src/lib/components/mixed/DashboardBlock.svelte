@@ -18,9 +18,15 @@
 	$inspect(title);
 </script>
 
-<section class="px-6 py-4 rounded-xl space-y-4 text-gray-600 {bg} {restProps.class}">
+<section
+	class=" p-2 px-4 lg:px-6 lg:py-4 rounded-xl space-y-4 text-gray-600 {bg} {restProps.class}"
+>
 	<div class="">
-		<h2 class="capitalize text-lg font-medium text-gray-700">{@html title}</h2>
+		<h2
+			class="capitalize text-sm font-semibold md:text-base lg:text-lg lg:font-medium text-gray-700"
+		>
+			{@html title}
+		</h2>
 	</div>
 	{@render children()}
 </section>

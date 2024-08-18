@@ -7,7 +7,6 @@ import {
 	limit,
 	orderBy,
 	query,
-	QueryConstraint,
 	serverTimestamp,
 	writeBatch
 } from 'firebase/firestore';
@@ -90,29 +89,33 @@ export async function createWithdrawTrx(param: TCreateTrxData) {
 /* Get all Deposit Transaction */
 export function loadAllDepositTrx() {
 	const _q = query(depositTrxCollection, orderBy('createdAt', 'desc'), limit(30));
-	getDocs(_q).then((v) => {
-		depositTrxStore.value = v.docs
-			.filter((v) => v.exists())
-			.map((v) => {
-				return {
-					...v.data(),
-					documentId: v.id
-				} as IDepositTrx;
-			});
-	});
+	getDocs(_q)
+		.then((v) => {
+			depositTrxStore.value = v.docs
+				.filter((v) => v.exists())
+				.map((v) => {
+					return {
+						...v.data(),
+						documentId: v.id
+					} as IDepositTrx;
+				});
+		})
+		.catch((e) => console.error(e));
 }
 
 /* Get all Withdraw Transaction */
 export function loadAllWithdrawTrx() {
 	const _q = query(withdrawTrxCollection, orderBy('createdAt', 'desc'), limit(30));
-	getDocs(_q).then((v) => {
-		withdrawTrxStore.value = v.docs
-			.filter((v) => v.exists())
-			.map((v) => {
-				return {
-					...v.data(),
-					documentId: v.id
-				} as IDepositTrx;
-			});
-	});
+	getDocs(_q)
+		.then((v) => {
+			withdrawTrxStore.value = v.docs
+				.filter((v) => v.exists())
+				.map((v) => {
+					return {
+						...v.data(),
+						documentId: v.id
+					} as IDepositTrx;
+				});
+		})
+		.catch((e) => console.error(e));
 }

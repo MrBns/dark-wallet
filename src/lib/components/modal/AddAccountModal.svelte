@@ -84,7 +84,6 @@
 {/snippet}
 
 <Modal
-	debug
 	bind:this={modal}
 	onOkBtnClick={() => handleSubmit()}
 	title="Add a New accounts"

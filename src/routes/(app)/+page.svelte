@@ -7,12 +7,12 @@
 <main class="">
 	<div class="container">
 		<div class="flex">
-			<div class="w-5/12">
+			<div class="w-full lg:w-5/12">
 				<div class="">
 					<SectionBalance />
 				</div>
 			</div>
-			<div class="w-7/12"></div>
+			<div class="lg:w-7/12"></div>
 		</div>
 	</div>
 </main>

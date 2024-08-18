@@ -7,6 +7,22 @@
 	import { createTrxValidator } from '$module/transaction/transaction.validator';
 	import type { HTMLFormAttributes, HTMLSelectAttributes } from 'svelte/elements';
 	import { z, type ZodFormattedError } from 'zod';
+	import { page } from '$app/stores';
+	import fmtCurrency from '$lib/helpers/fmtCurrency';
+	import { goto } from '$app/navigation';
+	import { untrack } from 'svelte';
+	import SearchParams from '$lib/helpers/URLSearchParams.svelte';
+	import { get } from 'svelte/store';
+
+	// [trx Type, feature available]
+	const trxTypes = ['deposit', 'withdraw'] as const;
+
+	let data = $state({ type: '' });
+	const pageSearchParam = new SearchParams();
+
+	$effect(() => {
+		data.type = pageSearchParam.get('type') as string;
+	});
 
 	let formData = $state({
 		type: '',
@@ -18,6 +34,7 @@
 		},
 		description: ''
 	});
+
 	let error: ZodFormattedError<z.infer<typeof createTrxValidator>>;
 	let formStatus = $state<{
 		type: 'success' | 'failed';
@@ -36,7 +53,11 @@
 		};
 	};
 
+	/**
+	 * Handle form Submission
+	 */
 	const handleSubmit: HTMLFormAttributes['onsubmit'] = async function (e) {
+		e.preventDefault();
 		const updateStatus = (status: string, type: 'success' | 'failed') =>
 			(formStatus = { status, type });
 		try {
@@ -59,36 +80,41 @@
 			}
 		}
 	};
+
+	/**
+	 * Effect for Setting Form Transaction type based on Params;
+	 */
+	$effect(() => {
+		if (pageSearchParam.get('type') === 'withdraw') {
+			formData.type = 'withdraw';
+		} else if (pageSearchParam.get('type') || pageSearchParam.get('type') === 'deposit') {
+			formData.type = 'deposit';
+		}
+	});
 </script>
 
 <main class="">
-	<div class="container">
-		<div class="bg-white p-4 max-w-[1000px] mx-auto shadow">
-			<div class="text-center">
-				<h1 class="text-3xl">Create a Expense record</h1>
+	<div class="bg-white mb-5">
+		<div class="container py-5">
+			<div class="">
+				<h1 class="text-3xl capitalize">Create a {formData.type} record</h1>
 			</div>
-			<form onsubmit={handleSubmit} class="space-y-8">
-				<div class="flex gap-x-4">
-					<label for="deposit" class="">
-						<span>Deposit</span>
-						<input
-							bind:group={formData.type}
-							id="deposit"
-							type="radio"
-							name="type"
-							value="deposit"
-						/>
-					</label>
-					<label for="withdraw" class="">
-						<span>Withdraw</span>
-						<input
-							bind:group={formData.type}
-							id="withdraw"
-							type="radio"
-							name="type"
-							value="withdraw"
-						/>
-					</label>
+		</div>
+	</div>
+	<div class="container">
+		<div class=" max-w-[1000px] mx-auto">
+			<form
+				onsubmit={handleSubmit}
+				class="space-y-8 p-4 rounded-2xl shadow-xl bg-white {formData.type}"
+			>
+				<div class="flex tabs tabs-{formData.type} w-fit mx-auto rounded-full border">
+					{#each trxTypes as trx}
+						<button
+							type="button"
+							class="px-4 py-2 rounded-full {trx === formData.type ? 'trx-active-button' : ''}"
+							onclick={() => pageSearchParam.setAndChangeUrl('type', trx)}>{trx}</button
+						>
+					{/each}
 				</div>
 
 				<div class="">
@@ -117,11 +143,15 @@
 						<div class="flex">
 							<div class="flex-1">
 								<p class="text-xs">official</p>
-								<p class="text-3xl font-bold">{selectedAccountBalance.official}</p>
+								<p class="text-3xl font-medium font-oswald">
+									{fmtCurrency(selectedAccountBalance.official)}
+								</p>
 							</div>
 							<div class="flex-1">
 								<p class="text-xs">unofficial</p>
-								<p class="text-3xl font-bold">{selectedAccountBalance.unOfficial}</p>
+								<p class="text-3xl font-medium font-oswald">
+									{fmtCurrency(selectedAccountBalance.unOfficial)}
+								</p>
 							</div>
 						</div>
 					</div>
@@ -134,6 +164,7 @@
 							<label for="official_amount">Official</label>
 							<Input
 								bind:value={formData.amount.official}
+								min={0}
 								name="official_amount"
 								type="number"
 								placeholder="Amount that parents knows"
@@ -143,6 +174,7 @@
 							<label for="unOfficial_amount">unOfficial</label>
 							<Input
 								bind:value={formData.amount.unOfficial}
+								min={0}
 								type="number"
 								id="unOfficial_amount"
 								placeholder="Parents don't knows"
@@ -171,4 +203,23 @@
 </main>
 
 <style lang="postcss">
+	form.deposit {
+		@apply border-green-300 border-2 shadow-green-700/10;
+	}
+	form.deposit .trx-active-button {
+		@apply bg-green-600 text-white;
+	}
+	form.withdraw {
+		@apply border-red-200 border-2 shadow-red-700/10;
+	}
+	form.withdraw .trx-active-button {
+		@apply bg-red-500 text-white;
+	}
+
+	.tabs.tabs-deposit {
+		@apply border-green-300;
+	}
+	.tabs.tabs-withdraw {
+		@apply border-red-300;
+	}
 </style>

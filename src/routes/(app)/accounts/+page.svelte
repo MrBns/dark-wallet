@@ -6,80 +6,47 @@
 		totalUnofficialAmount
 	} from '$module/accounts/account.svelte';
 	import AddAccountModal from '$lib/components/modal/AddAccountModal.svelte';
-	import iconify from '$lib/helpers/iconify';
-	import Confirm from '$lib/helpers/confirm';
 
-	import type { AccountI } from '$module/accounts/account.interface';
-	import { deleteSingleAccount } from '$module/accounts/account.services';
-	import { onMount } from 'svelte';
+	import fmtCurrency from '$lib/helpers/fmtCurrency';
+	import AccountCard from '$lib/components/cards/AccountCard.svelte';
 
 	let modal = $state<AddAccountModal>();
-	let colors = $state<string[]>([]);
-	function handleAccountDelete(account: AccountI) {
-		Confirm({
-			html: `
-			<div class="text-xl text-red-500">
-				<p class=""> Are you Sure you want to Delete</p>
-				<p class="font-bold"> ${account.name} </p>	
-			<div/>`
-		}).then((v) => {
-			console.log({ v });
-			if (v) {
-				deleteSingleAccount(account.documentId);
-			}
-		});
-	}
-
-	// onMount(async () => {
-	// 	const _colors = await import('$lib/helpers/getColorShades');
-	// 	colors = _colors.default();
-	// });
 </script>
 
 <AddAccountModal bind:this={modal} />
+{#snippet totalAmountCard(name: string, amount: number)}
+	<div class="p-3 flex-1 text-center">
+		<p class="text-gray-600 text-sm lg:text-base">{name}</p>
+		<p
+			class="font-oswald text-4xl font-bold lg:text-5xl text-slate-700 tracking-wide lg:font-medium"
+		>
+			{fmtCurrency(amount)}
+		</p>
+	</div>
+{/snippet}
+
 <main class="">
-	<div class="container pt-10 pb-20">
-		<div class="flex mb-10">
-			<h1 class="text-5xl flex-1">All Accounts</h1>
-			<PrimaryButton onclick={() => modal?.show()}>Add Account</PrimaryButton>
+	<div class="bg-white m-2 mx-4 rounded-3xl lg:m-0 lg:rounded-none">
+		<div
+			class="flex flex-col lg:flex-row container gap-x-5 py-4 divide-y-2 lg:divide-y-0 lg:divide-x"
+		>
+			{@render totalAmountCard('Total - with unofficial', totalUnofficialAmount.value)}
+			{@render totalAmountCard('Total - only Official', totalOfficialAmount.value)}
+			{@render totalAmountCard(
+				'Total - only unofficial',
+				totalUnofficialAmount.value - totalOfficialAmount.value
+			)}
 		</div>
+	</div>
+	<div class="container pt-10 pb-20">
 		<div class="">
-			<div class="flex gap-x-5 mb-5">
-				<p class="p-3 bg-green-500 flex-1 text-white text-xl rounded">
-					Total unofficial Amount <span class="text-5xl">{totalUnofficialAmount.value}</span>
-				</p>
-				<p class="p-3 bg-red-500 flex-1 text-white text-xl rounded">
-					Total unofficial Amount <span class="text-5xl">{totalOfficialAmount.value}</span>
-				</p>
-				<p class="p-3 bg-orange-500 flex-1 text-white text-xl rounded">
-					Total unofficial Extra Amount <span class="text-5xl"
-						>{totalUnofficialAmount.value - totalOfficialAmount.value}</span
-					>
-				</p>
+			<div class="flex mb-2">
+				<h1 class="text-2xl flex-1">All Accounts</h1>
+				<PrimaryButton onclick={() => modal?.show()}>Add Account</PrimaryButton>
 			</div>
-			<div class="grid grid-cols-3 gap-4">
+			<div class="grid grid-cols-1 lg:grid-cols-3 gap-4">
 				{#each accounts.value as acc}
-					{console.log(acc)}
-					<div class="bg-white text-gray-600 border border-gray-300 p-4 rounded-2xl relative group">
-						<p class="text-2xl font-medium">{acc.name}</p>
-						<p>
-							Total (with Unofficial) - <span class="font-oswald text-xl"
-								>{acc.amount.unOfficial}</span
-							>
-						</p>
-						<p>Official - <span class="font-oswald text-xl">{acc.amount.official}</span></p>
-						<p class="">
-							Unofficial - <span class="font-oswald text-xl"
-								>{acc.amount.unOfficial - acc.amount.official}</span
-							>
-						</p>
-						<button
-							onclick={() => handleAccountDelete(acc)}
-							class="text-3xl absolute top-3 right-3 hover:text-red-600 group-hover:visible invisible"
-						>
-							<iconify-icon icon={iconify.trashDuo}></iconify-icon>
-						</button>
-					</div>
+					<AccountCard account={acc} />
 				{/each}
 			</div>
 		</div>

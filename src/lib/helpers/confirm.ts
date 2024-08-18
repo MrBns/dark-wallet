@@ -1,3 +1,5 @@
+import { default as cuid } from './id';
+
 type ConfirmParams = {
 	html?: string;
 	title?: string;
@@ -6,7 +8,8 @@ const html = String.raw;
 export default async function Confirm(params: ConfirmParams) {
 	return new Promise((res) => {
 		{
-			const id = `modal-${globalThis.crypto.randomUUID()}`;
+			console.log(globalThis);
+			const id = `modal-${isSecureContext ? window.crypto.randomUUID() : cuid(30)}`;
 			const template = ({ title = 'Confirmation' }) =>
 				html` <!--Modal Backdrop -->
 					<div
@@ -56,7 +59,7 @@ export default async function Confirm(params: ConfirmParams) {
 
 			cancelBtn.addEventListener('click', function () {
 				setTimeout(remove, 100);
-				return res(true);
+				return res(false);
 			});
 			okBtn.addEventListener('click', function () {
 				console.log({ okBtn });
