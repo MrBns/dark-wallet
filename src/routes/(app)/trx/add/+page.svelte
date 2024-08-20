@@ -1,28 +1,23 @@
 <script lang="ts">
 	import PrimaryButton from '$lib/components/button/PrimaryButton.svelte';
 	import Input from '$lib/components/forms/input.svelte';
-	import { safeEventHandler } from '$lib/helpers/asyncHandler';
+	import { goto } from '$app/navigation';
 	import { accounts } from '$module/accounts/account.svelte';
 	import { createDepositTrx, createWithdrawTrx } from '$module/transaction/transaction.services';
 	import { createTrxValidator } from '$module/transaction/transaction.validator';
 	import type { HTMLFormAttributes, HTMLSelectAttributes } from 'svelte/elements';
 	import { z, type ZodFormattedError } from 'zod';
-	import { page } from '$app/stores';
+
 	import fmtCurrency from '$lib/helpers/fmtCurrency';
-	import { goto } from '$app/navigation';
-	import { untrack } from 'svelte';
+
 	import SearchParams from '$lib/helpers/URLSearchParams.svelte';
-	import { get } from 'svelte/store';
+	import toast from '$lib/helpers/toast';
 
 	// [trx Type, feature available]
 	const trxTypes = ['deposit', 'withdraw'] as const;
 
-	let data = $state({ type: '' });
+	let showDescription = $state(false);
 	const pageSearchParam = new SearchParams();
-
-	$effect(() => {
-		data.type = pageSearchParam.get('type') as string;
-	});
 
 	let formData = $state({
 		type: '',
@@ -71,6 +66,11 @@
 					await createWithdrawTrx(result.data);
 					updateStatus('Deposit Created Successfully', 'success');
 				}
+				await toast({
+					text: `${result.data.type} Record Added`
+				}).then(() => {
+					goto(`/trx?type=${result.data.type}`);
+				});
 			} else {
 				error = result.error.format();
 			}
@@ -93,11 +93,11 @@
 	});
 </script>
 
-<main class="">
+<main class="mb-16 xl:mb-20 text-sm md:text-base">
 	<div class="bg-white mb-5">
-		<div class="container py-5">
+		<div class="container py-2 lg:py-5">
 			<div class="">
-				<h1 class="text-3xl capitalize">Create a {formData.type} record</h1>
+				<h1 class="text-lg ml:text-xl xl:text-2xl capitalize">Create a {formData.type} record</h1>
 			</div>
 		</div>
 	</div>
@@ -105,7 +105,7 @@
 		<div class=" max-w-[1000px] mx-auto">
 			<form
 				onsubmit={handleSubmit}
-				class="space-y-8 p-4 rounded-2xl shadow-xl bg-white {formData.type}"
+				class="space-y-8 p-4 lg:p-8 rounded-2xl shadow-xl bg-white {formData.type}"
 			>
 				<div class="flex tabs tabs-{formData.type} w-fit mx-auto rounded-full border">
 					{#each trxTypes as trx}
@@ -121,8 +121,8 @@
 					<label for="note">Note</label>
 					<Input bind:value={formData.note} placeholder="expense reason" />
 				</div>
-				<div class="flex gap-x-8">
-					<div class="w-6/12">
+				<div class="flex flex-col lg:flex-row gap-5 lg:gap-8">
+					<div class="lg:w-6/12">
 						<label for="account" class="">Select Account</label>
 
 						<select
@@ -138,18 +138,18 @@
 							{/each}
 						</select>
 					</div>
-					<div class="w-6/12">
-						<p>Available Balance</p>
-						<div class="flex">
+					<div class="lg:w-6/12">
+						<p class="text-sm mb-2">Available Balance</p>
+						<div class="flex text-dark-500">
 							<div class="flex-1">
 								<p class="text-xs">official</p>
-								<p class="text-3xl font-medium font-oswald">
+								<p class="text-xl lg:text-3xl font-medium font-oswald">
 									{fmtCurrency(selectedAccountBalance.official)}
 								</p>
 							</div>
 							<div class="flex-1">
 								<p class="text-xs">unofficial</p>
-								<p class="text-3xl font-medium font-oswald">
+								<p class="text-xl lg:text-3xl font-medium font-oswald">
 									{fmtCurrency(selectedAccountBalance.unOfficial)}
 								</p>
 							</div>
@@ -158,18 +158,8 @@
 				</div>
 
 				<div class="">
-					<h3 class="text-xl mb-2">Amount</h3>
-					<div class="flex pl-4 border-l gap-x-4">
-						<div class="flex-1">
-							<label for="official_amount">Official</label>
-							<Input
-								bind:value={formData.amount.official}
-								min={0}
-								name="official_amount"
-								type="number"
-								placeholder="Amount that parents knows"
-							/>
-						</div>
+					<h3 class="text-base lg:text-xl mb-2">Amount</h3>
+					<div class="flex flex-col lg:flex-row gap-4 pl-4 border-l gap-x-4">
 						<div class="flex-1">
 							<label for="unOfficial_amount">unOfficial</label>
 							<Input
@@ -180,22 +170,40 @@
 								placeholder="Parents don't knows"
 							/>
 						</div>
+						<div class="flex-1">
+							<label for="official_amount">Official</label>
+							<Input
+								bind:value={formData.amount.official}
+								min={0}
+								name="official_amount"
+								type="number"
+								placeholder="Amount that parents knows"
+							/>
+						</div>
 					</div>
 				</div>
-
 				<div class="">
-					<label for="description">Write Some Description</label>
-					<textarea
-						bind:value={formData.description}
-						name="description"
-						id="description"
-						class="bg-white resize-y border border-gray-300 p-2 w-full rounded"
-						rows="5"
-					></textarea>
+					{#if showDescription}
+						<div class="">
+							<label for="description">Write Some Description</label>
+							<textarea
+								bind:value={formData.description}
+								name="description"
+								id="description"
+								class="bg-white resize-y border border-gray-300 p-2 w-full rounded"
+								rows="4"
+							></textarea>
+						</div>
+					{:else}
+						<button
+							onclick={() => (showDescription = true)}
+							class="w-full border border-current p-1 text-sm text-dark-400/80 border-dashed active:text-dark-500 hover:bg-dark-100/80"
+							>Add Description</button
+						>
+					{/if}
 				</div>
-
 				<div class="">
-					<PrimaryButton>Add Transaction</PrimaryButton>
+					<PrimaryButton class="max-sm:w-full">Add Transaction</PrimaryButton>
 				</div>
 			</form>
 		</div>

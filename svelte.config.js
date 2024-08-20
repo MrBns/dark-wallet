@@ -1,4 +1,4 @@
-import adapter from '@sveltejs/adapter-auto';
+import adapter from '@sveltejs/adapter-netlify';
 import { vitePreprocess } from '@sveltejs/vite-plugin-svelte';
 
 /** @type {import('@sveltejs/kit').Config} */
@@ -16,7 +16,9 @@ const config = {
 			'$module/*': './src/module/*',
 			$module: './src/',
 			'~pages/*': './src/pages/*',
-			'~pages': './src/pages'
+			'~pages': './src/pages',
+			'~styles': './src/styles',
+			'~styles/*': './src/styles/*'
 		}
 	}
 };

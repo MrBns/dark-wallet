@@ -1,4 +1,7 @@
 <script lang="ts">
+	import iconify from '$lib/helpers/iconify';
+	import NavbarMoreToolsBottomDrawer from '../drawer/NavbarMoreToolsBottomDrawer.svelte';
+	let navbarMoreToolsDrawer = $state<NavbarMoreToolsBottomDrawer>();
 </script>
 
 {#snippet navLink(text?: string, link?: string)}
@@ -10,8 +13,18 @@
 		>
 	</li>
 {/snippet}
+
 <nav class="bg-white fixed bottom-0 w-full py-2">
-	<div class="">
+	<div class="container relative">
+		<div class="w-fit absolute right-3 xl:right-0 -top-2/3 sm:-top-1/3">
+			<button
+				onclick={() => navbarMoreToolsDrawer?.show()}
+				class="p-3 border border-current bg-white text-dark-500 inline-flex rounded-full"
+			>
+				<iconify-icon class="text-2xl md:text-xl" icon={iconify.moreApps}></iconify-icon>
+			</button>
+		</div>
+
 		<ul class="flex justify-center">
 			{@render navLink('Home', '/')}
 			{@render navLink('Transaction', '/trx?type=deposit')}
@@ -20,5 +33,10 @@
 	</div>
 </nav>
 
+<NavbarMoreToolsBottomDrawer bind:this={navbarMoreToolsDrawer} />
+
 <style lang="postcss">
+	nav {
+		box-shadow: 0px -7px 10px 0px rgba(0, 0, 0, 0.037);
+	}
 </style>

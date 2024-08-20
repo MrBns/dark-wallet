@@ -1,6 +1,7 @@
 {
 	"cSpell.words": ["paralleldrive"],
 	"css.validate": false,
+	"scss.validate": false,
 	"tailwindCSS.experimental.classRegex": ["tw_.*"],
-	"tailwindCSS.classAttributes": ["class", "className", "ngClass", "class:list"]
+	"tailwindCSS.classAttributes": ["class", "className", "ngClass", "class:list", ".*Styles*"]
 }

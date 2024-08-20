@@ -1,0 +1,44 @@
+table.transaction-table {
+	thead tr th {
+		@apply bg-white border border-black/60 p-1 lg:p-3;
+	}
+
+	tbody td {
+		@apply bg-white border-x p-2 ml:px-3 border-y-8 border-y-gray-100;
+	}
+
+	th.date,
+	td.date {
+		@apply w-[12ch];
+	}
+
+	th.note,
+	td.note {
+		@apply 2xl:w-[500px];
+	}
+
+	th.action,
+	td.action {
+		@apply w-[80px];
+	}
+
+	td.official,
+	th.official,
+	td.unofficial,
+	th.unofficial {
+		@apply w-[100px] lg:w-[150px];
+	}
+
+	&.deposit {
+		@apply border;
+		thead tr th {
+			@apply border-green-500 text-green-700;
+		}
+	}
+	&.withdraw {
+		@apply border;
+		thead tr th {
+			@apply border-red-500 text-red-700;
+		}
+	}
+}

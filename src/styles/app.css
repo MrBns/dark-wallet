@@ -1,0 +1,9 @@
+@import "tailwindcss/base";
+
+/* Components import */
+@import "tailwindcss/components";
+@import "./components/trx-table.scss";
+@import "./components/toast.scss";
+
+/* Utilities Import */
+@import "tailwindcss/utilities";

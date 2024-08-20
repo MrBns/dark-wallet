@@ -1,4 +1,4 @@
-import id from '$lib/helpers/id';
+import id from '$lib/helpers/cuid';
 import { z } from 'zod';
 
 export const AccountSchema = z.object({

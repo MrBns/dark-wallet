@@ -1,0 +1,14 @@
+.bns-toast {
+	.progress-animation {
+		animation: progress var(--duration) linear 1;
+		animation-fill-mode: both;
+	}
+	@keyframes progress {
+		0% {
+			@apply w-0 rounded-md;
+		}
+		100% {
+			@apply w-full rounded-r-none;
+		}
+	}
+}

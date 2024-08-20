@@ -2,7 +2,7 @@
 	import { browser } from '$app/environment';
 	import { init } from '$module/index';
 	let { children } = $props();
-	import '../app.css';
+	import '~styles/app.css';
 
 	if (browser) {
 		init()

@@ -44,7 +44,7 @@
 				<h1 class="text-2xl flex-1">All Accounts</h1>
 				<PrimaryButton onclick={() => modal?.show()}>Add Account</PrimaryButton>
 			</div>
-			<div class="grid grid-cols-1 lg:grid-cols-3 gap-4">
+			<div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">
 				{#each accounts.value as acc}
 					<AccountCard account={acc} />
 				{/each}

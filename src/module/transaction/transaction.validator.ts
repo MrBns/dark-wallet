@@ -1,4 +1,4 @@
-import id from '$lib/helpers/id';
+import id from '$lib/helpers/cuid';
 import { accounts, getAccountByKey } from '$module/accounts/account.svelte';
 import { z } from 'zod';
 

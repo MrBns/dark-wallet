@@ -1,4 +1,5 @@
 <script>
+	import MobileTrxDetailsCard from '$lib/components/cards/MobileTrxDetailsCard.svelte';
 	import fmtCurrency from '$lib/helpers/fmtCurrency';
 	import { loadAllWithdrawTrx } from '$module/transaction/transaction.services';
 	import { depositTrxStore, withdrawTrxStore } from '$module/transaction/transaction.svelte';
@@ -13,37 +14,44 @@
 </script>
 
 {#if withdrawTrxStore.value.length}
-	<div class="min-[2000px]:container px-10 py-4">
-		<table class="w-full transaction-table">
+	<div class="min-w-[450px] min-[2000px]:container px-2 lg:px-10 py-4">
+		<table class="w-full transaction-table withdraw">
 			<thead>
-				<tr class="withdraw">
+				<tr class="">
 					<th class="date">Date</th>
 					<th class="note">Note</th>
-					<th class="description">Description</th>
-					<th class="official-amount">Official Amount</th>
-					<th class="unofficial-amount">Unofficial Amount</th>
-					<th class="action">Action</th>
+					<th class="description hidden 2xl:table-cell">Description</th>
+					<th class="official hidden ml:table-cell">Official</th>
+					<th class="unofficial hidden ml:table-cell">Unofficial</th>
+					<th class="action max-md:hidden">Action</th>
 				</tr>
 			</thead>
 			<tbody>
-				{#each withdrawTrxStore.value as value, idx}
+				{#each withdrawTrxStore.value as v, idx}
 					<tr class="">
-						<td class="bg-white border-x p-2 border-y-8 border-y-gray-100"
-							>{value.createdAt.toDate().toLocaleDateString('en-IN', {
+						<td class="date"
+							>{v.createdAt.toDate().toLocaleDateString('en-IN', {
 								month: 'short',
 								day: 'numeric',
 								year: 'numeric'
 							})}</td
 						>
-						<td class="bg-white border-x p-2 border-y-8 border-y-gray-100">{value.note}</td>
-						<td class="bg-white border-x p-2 border-y-8 border-y-gray-100">{value.description}</td>
-						<td class="bg-white border-x p-2 border-y-8 border-y-gray-100"
-							>{fmtCurrency(value.amount.official)}</td
+
+						<td class="note">
+							<div class="hidden ml:block">
+								{v.note}
+							</div>
+							<div class="ml:hidden">
+								<MobileTrxDetailsCard data={v} />
+							</div>
+						</td>
+						<td class="description hidden 2xl:table-cell">{v.description}</td>
+
+						<td class="official hidden ml:table-cell">{fmtCurrency(v.amount.official, 'short')}</td>
+						<td class="unofficial hidden ml:table-cell"
+							>{fmtCurrency(v.amount.unOfficial, 'short')}</td
 						>
-						<td class="bg-white border-x p-2 border-y-8 border-y-gray-100"
-							>{fmtCurrency(value.amount.unOfficial)}</td
-						>
-						<td class="bg-white border-x p-2 border-y-8 border-y-gray-100">
+						<td class="action hidden md:table-cell">
 							{#if idx < 5}
 								<button class="bg-yellow-500 text-white px-2 rounded">undo</button>
 							{/if}

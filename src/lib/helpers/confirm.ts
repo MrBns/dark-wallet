@@ -1,4 +1,4 @@
-import { default as cuid } from './id';
+import { default as cuid } from './cuid';
 
 type ConfirmParams = {
 	html?: string;

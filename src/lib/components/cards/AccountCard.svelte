@@ -4,6 +4,7 @@
 	import iconify from '$lib/helpers/iconify';
 	import type { AccountI } from '$module/accounts/account.interface';
 	import { deleteSingleAccount } from '$module/accounts/account.services';
+	import { mount } from 'svelte';
 
 	let {
 		account: acc,
