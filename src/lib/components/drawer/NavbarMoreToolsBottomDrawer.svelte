@@ -24,7 +24,7 @@
 	];
 </script>
 
-<Drawer debug bind:this={drawer} direction="bottom" title="Shortcuts">
+<Drawer bind:this={drawer} direction="bottom" title="Shortcuts">
 	<div class="p-4 flex gap-2 flex-wrap w-screen md:w-[600px] lg:w-[800px]">
 		{#each linksShortCut as l, _idx}
 			<a
