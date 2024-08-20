@@ -1,6 +1,6 @@
 {
-	"name": "mrbns-wallet",
-	"version": "0.0.1",
+	"name": "@bns/dark-wallet",
+	"version": "0.0.1-alpha",
 	"private": true,
 	"scripts": {
 		"dev": "vite dev --host",
@@ -40,5 +40,10 @@
 		"color": "^4.2.3",
 		"firebase": "^10.12.5",
 		"zod": "^3.23.8"
+	},
+	"author": {
+		"name": "Mr Binary Sniper",
+		"email": "hi@mrbns.dev",
+		"url": "https://mrbns.dev"
 	}
 }
